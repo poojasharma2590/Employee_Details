@@ -1,0 +1,26 @@
+Python 2.7.3 (default, Apr 10 2012, 23:31:26) [MSC v.1500 32 bit (Intel)] on win32
+Type "copyright", "credits" or "license()" for more information.
+>>> class Main(tornado.web.RequestHandler):
+  def get(self):
+		self.write("Main")
+		class DBHandler(tornado.web.RequestHandler):
+			def get(self):
+				db = tornado.database.Connection(
+					host="localhost", database="Employee_Information",
+					user="root", password="root")
+				rows = db.query("select * from emp")
+				db.close()
+				top = "<html><body><b>Employee Information</b><br /><br />"
+				table = "<table border=\"1\"><col width=\"200\" /><col width=\"200\" /><col width=\"100\" /><col width=\"100\" /><col width=\"100\" /><col width=\"100\" />"
+			for row in rows:
+				table += "<tr><td>" + str(row["Employee ID"]) + "</td><td>" + str(row["First Name"]) + "</td><td>" + str(row["Last Name"]) + "</td><td>" + str(row["Address"]) + "</td><td>" + str(row["Age"]) + "</td><td>" + str(row["Salary"]) + "</td></tr>"
+        bottom = "</body></html>"
+        self.write(top+table+bottom)
+        application = tornado.web.Application([
+		(r"/", Main),
+		(r"/emp", DBHandler),
+		])
+        if __name__ == "__main__":
+		application.listen(8080)
+		tornado.ioloop.IOLoop.instance().start()
+		
